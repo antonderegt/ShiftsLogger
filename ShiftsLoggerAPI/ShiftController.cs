@@ -75,6 +75,18 @@ public class ShiftController
         return TypedResults.Created("/shifts/{id}", shift);
     }
 
+    public static async Task<Results<Created<Shift>, NotFound>> UpdateShiftAsync(Shift updatedShift, IShiftService service)
+    {
+        Shift? shift = await service.UpdateShiftAsync(updatedShift);
+
+        if (shift == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Created("/shifts/{id}", shift);
+    }
+
     public static async Task<Results<NoContent, NotFound>> DeleteShiftAsync(int id, IShiftService service)
     {
         if (!await service.DeleteShiftByIdAsync(id))

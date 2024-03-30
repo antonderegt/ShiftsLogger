@@ -11,5 +11,6 @@ public interface IShiftService
     Task<Shift?> GetShiftByIdAsync(int id);
     Task<Shift?> StartShiftAsync(StartShift shift);
     Task<Shift?> EndShiftAsync(EndShift shift);
+    Task<Shift?> UpdateShiftAsync(Shift shift);
     Task<bool> DeleteShiftByIdAsync(int id);
 }

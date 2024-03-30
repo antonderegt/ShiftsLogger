@@ -60,6 +60,21 @@ public class SqlServerShiftService(ShiftsContext context) : IShiftService
         return shift;
     }
 
+    public async Task<Shift?> UpdateShiftAsync(Shift updatedShift)
+    {
+        Shift? shift = await _context.Shifts.FirstOrDefaultAsync(shift => shift.Id == updatedShift.Id);
+
+        if (shift != null)
+        {
+            shift.StartTime = updatedShift.StartTime;
+            shift.EndTime = updatedShift.EndTime;
+            shift.EmployeeId = updatedShift.EmployeeId;
+        }
+
+        await _context.SaveChangesAsync();
+        return shift;
+    }
+
     public async Task<bool> DeleteShiftByIdAsync(int id)
     {
         Shift? shift = await _context.Shifts.FirstOrDefaultAsync(shift => shift.Id == id);

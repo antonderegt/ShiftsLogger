@@ -34,5 +34,17 @@ content-type: application/json
 }
 ###
 
+# Update shift
+POST http://localhost:5168/shifts/update
+content-type: application/json
+
+{
+    "id": 1,
+    "startTime": "2023-03-15T09:45:30.1234567",
+    "endTime": "2023-03-15T17:45:30.1234567",
+    "employeeId": 1
+}
+###
+
 # Delete shift by id
 DELETE http://localhost:5168/shifts/2
