@@ -1,6 +1,6 @@
 using Spectre.Console;
-using ShiftsLoggerLibrary;
 using static ShiftsLoggerUI.Enums;
+using ShiftsLoggerLibrary.Models;
 
 
 namespace ShiftsLoggerUI;
@@ -8,7 +8,7 @@ namespace ShiftsLoggerUI;
 public class UserInterface
 {
     private static int employeeId;
-    public static void MainMenu()
+    public static async Task MainMenu()
     {
         AnsiConsole.Clear();
         employeeId = AnsiConsole.Ask<int>("What is your employee id?");
@@ -41,7 +41,7 @@ public class UserInterface
                 DeleteShift();
                 break;
             case MainMenuOption.ShowShifts:
-                ShowShifts();
+                await ShowShifts();
                 break;
             case MainMenuOption.Quit:
                 QuitApplication();
@@ -69,9 +69,38 @@ public class UserInterface
 
     }
 
-    private static void ShowShifts()
+    private static async Task ShowShifts()
     {
+        DataAccess dataAccess = new();
 
+        IEnumerable<Shift>? shifts = await dataAccess.GetShiftsAsync();
+
+        if (shifts == null || !shifts.Any())
+        {
+            AnsiConsole.Markup("[red]No shifts yet![/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+
+        Table table = new()
+        {
+            Title = new TableTitle("All shifts")
+        };
+
+        table.AddColumn("Id");
+        table.AddColumn("Start time");
+        table.AddColumn("End time");
+        table.AddColumn("Employee id");
+
+        foreach (Shift shift in shifts)
+        {
+            table.AddRow(shift.Id.ToString(), shift.StartTime.ToString() ?? "-", shift.EndTime.ToString() ?? "-", shift.EmployeeId.ToString());
+        }
+
+        AnsiConsole.Write(table);
+
+        AnsiConsole.MarkupLine("Press enter to return to menu...");
+        Console.ReadLine();
     }
 
     private static void QuitApplication()
