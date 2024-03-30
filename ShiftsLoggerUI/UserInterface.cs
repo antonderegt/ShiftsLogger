@@ -66,7 +66,13 @@ public class UserInterface
             return;
         }
 
-        string start = AnsiConsole.Ask<string>("Start time (yyyy-mm-dd hh:mm)?");
+        string start = AnsiConsole.Ask<string>("Start time (yyyy-mm-dd hh:mm)? (0 to exit)");
+
+        if (start.Equals("0"))
+        {
+            return;
+        }
+
         DateTime startTime;
         while (!DateTime.TryParse(start, out startTime))
         {
@@ -104,7 +110,13 @@ public class UserInterface
             return;
         }
 
-        string end = AnsiConsole.Ask<string>("End time (yyyy-mm-dd hh:mm)?");
+        string end = AnsiConsole.Ask<string>("End time (yyyy-mm-dd hh:mm)? (0 to exit)");
+
+        if (end.Equals("0"))
+        {
+            return;
+        }
+
         DateTime endTime;
         while (!DateTime.TryParse(end, out endTime))
         {
