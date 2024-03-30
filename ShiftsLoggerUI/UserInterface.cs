@@ -38,7 +38,7 @@ public class UserInterface
                     await EndShift();
                     break;
                 case MainMenuOption.UpdateShift:
-                    UpdateShift();
+                    await UpdateShift();
                     break;
                 case MainMenuOption.DeleteShift:
                     await DeleteShift();
@@ -135,17 +135,128 @@ public class UserInterface
         }
         else
         {
-            if (shift != null)
-            {
-                AnsiConsole.MarkupLine($"[green]Shift ended at {shift.EndTime}.[/] Press enter to return to menu...");
-                Console.ReadLine();
-            }
+            AnsiConsole.MarkupLine($"[green]Shift ended at {shift.EndTime}.[/] Press enter to return to menu...");
+            Console.ReadLine();
         }
     }
 
-    private static void UpdateShift()
+    private static async Task UpdateShift()
     {
+        DataAccess dataAccess = new();
+        IEnumerable<Shift>? shifts = await dataAccess.GetShiftsAsync(employeeId);
 
+        if (shifts == null || !shifts.Any())
+        {
+            AnsiConsole.Markup("[red]No shifts yet![/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+
+        await ShowShifts();
+
+        int shiftId = AnsiConsole.Ask<int>("Which shift do you want to [blue]udpate[/]?");
+
+        Shift? shiftToUpdate = shifts.FirstOrDefault(shift => shift.Id == shiftId);
+
+        if (shiftToUpdate == null)
+        {
+            AnsiConsole.Markup("[red]Unable to find shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+
+        UpdateStartTime(shiftToUpdate);
+        UpdateEndTime(shiftToUpdate);
+        UpdateEmployeeId(shiftToUpdate);
+
+        try
+        {
+            Shift? shift = await dataAccess.UpdateShiftAsync(shiftToUpdate);
+            AnsiConsole.MarkupLine($"[green]Shift updated.[/] Press enter to return to menu...");
+        }
+        catch (ApplicationException)
+        {
+            AnsiConsole.MarkupLine("[red]Unable to update shift.[/] Press enter to return to menu...");
+        }
+
+        Console.ReadLine();
+    }
+
+    private static void UpdateStartTime(Shift shiftToUpdate)
+    {
+        AnsiConsole.MarkupLine($"Current start time: [blue]{shiftToUpdate.StartTime}[/]. Leave empty to keep value, press [blue]0[/] to exit.");
+        string start = AnsiConsole.Prompt(
+            new TextPrompt<string>("Start time (yyyy-mm-dd hh:mm)?")
+                .AllowEmpty());
+        if (start.Equals("0"))
+        {
+            return;
+        }
+
+        DateTime? startTime;
+        if (string.IsNullOrEmpty(start))
+        {
+            startTime = shiftToUpdate.StartTime;
+        }
+        else
+        {
+            DateTime newStartTime;
+            while (!DateTime.TryParse(start, out newStartTime))
+            {
+                AnsiConsole.MarkupLine("[red]Error parsing date, try again...[/]");
+                start = AnsiConsole.Ask<string>("Start time (yyyy-mm-dd hh:mm)?");
+            }
+            startTime = newStartTime;
+        }
+
+        shiftToUpdate.StartTime = startTime;
+    }
+
+    private static void UpdateEndTime(Shift shiftToUpdate)
+    {
+        AnsiConsole.MarkupLine($"Current end time: [blue]{shiftToUpdate.EndTime}[/]. Leave empty to keep value, press [blue]0[/] to exit.");
+        string end = AnsiConsole.Prompt(
+            new TextPrompt<string>("End time (yyyy-mm-dd hh:mm)?")
+                .AllowEmpty());
+        if (end.Equals("0"))
+        {
+            return;
+        }
+
+        DateTime? endTime;
+        if (string.IsNullOrEmpty(end))
+        {
+            endTime = shiftToUpdate.EndTime;
+        }
+        else
+        {
+            DateTime newEndTime;
+            while (!DateTime.TryParse(end, out newEndTime))
+            {
+                AnsiConsole.MarkupLine("[red]Error parsing date, try again...[/]");
+                end = AnsiConsole.Ask<string>("End time (yyyy-mm-dd hh:mm)?");
+            }
+            endTime = newEndTime;
+        }
+
+        shiftToUpdate.EndTime = endTime;
+    }
+
+    private static void UpdateEmployeeId(Shift shiftToUpdate)
+    {
+        int newEmployeeId = AnsiConsole.Ask<int>("Employee id? (0 to exit)");
+        if (newEmployeeId == 0)
+        {
+            return;
+        }
+
+        while (newEmployeeId <= 0)
+        {
+            AnsiConsole.MarkupLine("[red]Invalid employee id, try again...[/]");
+            newEmployeeId = AnsiConsole.Ask<int>("Employee id? (0 to exit)");
+        }
+
+        shiftToUpdate.EmployeeId = newEmployeeId;
     }
 
     private static async Task DeleteShift()
