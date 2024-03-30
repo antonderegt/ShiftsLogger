@@ -2,6 +2,8 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using ShiftsLoggerLibrary.Models;
 using Microsoft.Extensions.Configuration;
+using System.Text;
+using ShiftsLoggerLibrary.DTOs;
 
 namespace ShiftsLoggerUI;
 
@@ -51,6 +53,51 @@ public class DataAccess
         }
 
         return [];
+    }
+
+    public async Task<Shift?> GetRunningShiftAsync(int id)
+    {
+        try
+        {
+            var json = await _client.GetStringAsync($"{BasePath}/employee/{id}/running");
+            return JsonSerializer.Deserialize<Shift>(json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode != System.Net.HttpStatusCode.NotFound)
+            {
+                Console.WriteLine($"An error occurred while making the HTTP request: {ex.Message}");
+            }
+        }
+
+        return null;
+    }
+
+    public async Task<Shift?> StartShiftAsync(StartShift startShift)
+    {
+        try
+        {
+            var jsonShift = JsonSerializer.Serialize(startShift);
+            HttpContent content = new StringContent(jsonShift, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{BasePath}/start", content);
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Shift>(json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred while making the HTTP request: {ex.Message}");
+        }
+
+        return null;
     }
 
     public async Task<bool> DeleteShiftAsync(int id)

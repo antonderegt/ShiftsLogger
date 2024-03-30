@@ -1,6 +1,7 @@
 using Spectre.Console;
 using static ShiftsLoggerUI.Enums;
 using ShiftsLoggerLibrary.Models;
+using ShiftsLoggerLibrary.DTOs;
 
 
 namespace ShiftsLoggerUI;
@@ -31,7 +32,7 @@ public class UserInterface
             switch (option)
             {
                 case MainMenuOption.StartShift:
-                    StartShift();
+                    await StartShift();
                     break;
                 case MainMenuOption.EndShift:
                     EndShift();
@@ -54,9 +55,42 @@ public class UserInterface
         }
     }
 
-    private static void StartShift()
+    private static async Task StartShift()
     {
+        DataAccess dataAccess = new();
+        Shift? shift = await dataAccess.GetRunningShiftAsync(employeeId);
+        if (shift != null)
+        {
+            AnsiConsole.MarkupLine("[red]You are already on shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
 
+        string start = AnsiConsole.Ask<string>("Start time (yyyy-mm-dd hh:mm)?");
+        DateTime startTime;
+        while (!DateTime.TryParse(start, out startTime))
+        {
+            AnsiConsole.MarkupLine("[red]Error parsing date, try again...[/]");
+            start = AnsiConsole.Ask<string>("Start time (yyyy-mm-dd hh:mm)?");
+        }
+
+        StartShift startShift = new() { StartTime = startTime, EmployeeId = employeeId };
+        shift = await dataAccess.StartShiftAsync(startShift);
+
+        if (shift == null)
+        {
+            AnsiConsole.MarkupLine("[red]Unable to start a shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+        else
+        {
+            if (shift != null)
+            {
+                AnsiConsole.MarkupLine($"[green]Shift started at {shift.StartTime}.[/] Press enter to return to menu...");
+                Console.ReadLine();
+            }
+        }
     }
 
     private static void EndShift()
