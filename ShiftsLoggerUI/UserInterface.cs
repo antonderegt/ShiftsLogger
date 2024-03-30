@@ -12,42 +12,45 @@ public class UserInterface
     {
         AnsiConsole.Clear();
         employeeId = AnsiConsole.Ask<int>("What is your employee id?");
-        AnsiConsole.Clear();
 
-        MainMenuOption option = AnsiConsole.Prompt(
-            new SelectionPrompt<MainMenuOption>()
-                .Title("What do you want to [blue]do[/]?")
-                .AddChoices(
-                    MainMenuOption.StartShift,
-                    MainMenuOption.EndShift,
-                    MainMenuOption.UpdateShift,
-                    MainMenuOption.DeleteShift,
-                    MainMenuOption.ShowShifts,
-                    MainMenuOption.Quit
-                ));
-
-        switch (option)
+        while (true)
         {
-            case MainMenuOption.StartShift:
-                StartShift();
-                break;
-            case MainMenuOption.EndShift:
-                EndShift();
-                break;
-            case MainMenuOption.UpdateShift:
-                UpdateShift();
-                break;
-            case MainMenuOption.DeleteShift:
-                await DeleteShift();
-                break;
-            case MainMenuOption.ShowShifts:
-                await ShowShifts();
-                AnsiConsole.MarkupLine("Press enter to return to menu...");
-                Console.ReadLine();
-                break;
-            case MainMenuOption.Quit:
-                QuitApplication();
-                break;
+            AnsiConsole.Clear();
+            MainMenuOption option = AnsiConsole.Prompt(
+                new SelectionPrompt<MainMenuOption>()
+                    .Title("What do you want to [blue]do[/]?")
+                    .AddChoices(
+                        MainMenuOption.StartShift,
+                        MainMenuOption.EndShift,
+                        MainMenuOption.UpdateShift,
+                        MainMenuOption.DeleteShift,
+                        MainMenuOption.ShowShifts,
+                        MainMenuOption.Quit
+                    ));
+
+            switch (option)
+            {
+                case MainMenuOption.StartShift:
+                    StartShift();
+                    break;
+                case MainMenuOption.EndShift:
+                    EndShift();
+                    break;
+                case MainMenuOption.UpdateShift:
+                    UpdateShift();
+                    break;
+                case MainMenuOption.DeleteShift:
+                    await DeleteShift();
+                    break;
+                case MainMenuOption.ShowShifts:
+                    await ShowShifts();
+                    AnsiConsole.Markup("Press enter to return to menu...");
+                    Console.ReadLine();
+                    break;
+                case MainMenuOption.Quit:
+                    QuitApplication();
+                    break;
+            }
         }
     }
 
@@ -108,8 +111,7 @@ public class UserInterface
 
         if (shifts == null || !shifts.Any())
         {
-            AnsiConsole.Markup("[red]No shifts yet![/] Press enter to return to menu...");
-            Console.ReadLine();
+            AnsiConsole.Markup("[red]No shifts yet![/] ");
             return;
         }
 
