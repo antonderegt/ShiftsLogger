@@ -154,7 +154,7 @@ public class UserInterface
 
         await ShowShifts();
 
-        int shiftId = AnsiConsole.Ask<int>("Which shift do you want to [blue]udpate[/]?");
+        int shiftId = AnsiConsole.Ask<int>("Type the shift id to [blue]udpate[/]: ");
 
         Shift? shiftToUpdate = shifts.FirstOrDefault(shift => shift.Id == shiftId);
 
@@ -169,16 +169,16 @@ public class UserInterface
         UpdateEndTime(shiftToUpdate);
         UpdateEmployeeId(shiftToUpdate);
 
-        try
+        Shift? shift = await dataAccess.UpdateShiftAsync(shiftToUpdate);
+        if (shift == null)
         {
-            Shift? shift = await dataAccess.UpdateShiftAsync(shiftToUpdate);
-            AnsiConsole.MarkupLine($"[green]Shift updated.[/] Press enter to return to menu...");
-        }
-        catch (ApplicationException)
-        {
+
             AnsiConsole.MarkupLine("[red]Unable to update shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
         }
 
+        AnsiConsole.MarkupLine($"[green]Shift updated.[/] Press enter to return to menu...");
         Console.ReadLine();
     }
 
@@ -273,7 +273,7 @@ public class UserInterface
 
         await ShowShifts();
 
-        int shiftId = AnsiConsole.Ask<int>("Which shift do you want to [blue]delete[/]?");
+        int shiftId = AnsiConsole.Ask<int>("Type the shift id to [blue]delete[/]: ");
         if (!AnsiConsole.Confirm($"Are you sure you want to delete shift {shiftId}?"))
         {
             return;

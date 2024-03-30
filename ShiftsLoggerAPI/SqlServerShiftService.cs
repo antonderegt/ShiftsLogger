@@ -51,12 +51,17 @@ public class SqlServerShiftService(ShiftsContext context) : IShiftService
     {
         Shift? shift = await _context.Shifts.FirstOrDefaultAsync(shift => shift.Id == endShift.Id && shift.EndTime == null);
 
+        if (endShift.EndTime < shift.StartTime)
+        {
+            return null;
+        }
+
         if (shift != null)
         {
             shift.EndTime = endShift.EndTime;
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
         return shift;
     }
 

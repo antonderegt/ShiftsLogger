@@ -43,9 +43,9 @@ public class DataAccess
             var json = await _client.GetStringAsync($"{BasePath}/employee/{id}");
             return JsonSerializer.Deserialize<IEnumerable<Shift>>(json);
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+            return [];
         }
         catch (HttpRequestException ex)
         {
@@ -62,9 +62,9 @@ public class DataAccess
             var json = await _client.GetStringAsync($"{BasePath}/employee/{id}/running");
             return JsonSerializer.Deserialize<Shift>(json);
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+            return null;
         }
         catch (HttpRequestException ex)
         {
@@ -88,9 +88,9 @@ public class DataAccess
 
             return JsonSerializer.Deserialize<Shift>(json);
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+            return null;
         }
         catch (HttpRequestException ex)
         {
@@ -111,9 +111,9 @@ public class DataAccess
 
             return JsonSerializer.Deserialize<Shift>(json);
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+            return null;
         }
         catch (HttpRequestException ex)
         {
@@ -129,20 +129,21 @@ public class DataAccess
         {
             var jsonShift = JsonSerializer.Serialize(shift);
             HttpContent content = new StringContent(jsonShift, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{BasePath}/update", content);
-            response.EnsureSuccessStatusCode();
+            var response = await _client.PutAsync($"{BasePath}/update", content);
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonSerializer.Deserialize<Shift>(json);
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            throw new ApplicationException($"An error occurred while deserializing the JSON: {ex.Message}", ex);
+            return null;
         }
         catch (HttpRequestException ex)
         {
-            throw new ApplicationException($"An error occurred while making the HTTP request: {ex.Message}", ex);
+            Console.WriteLine($"An error occurred while making the HTTP request: {ex.Message}");
         }
+
+        return null;
     }
 
     public async Task<bool> DeleteShiftAsync(int id)
