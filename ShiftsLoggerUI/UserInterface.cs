@@ -35,7 +35,7 @@ public class UserInterface
                     await StartShift();
                     break;
                 case MainMenuOption.EndShift:
-                    EndShift();
+                    await EndShift();
                     break;
                 case MainMenuOption.UpdateShift:
                     UpdateShift();
@@ -93,9 +93,42 @@ public class UserInterface
         }
     }
 
-    private static void EndShift()
+    private static async Task EndShift()
     {
+        DataAccess dataAccess = new();
+        Shift? shift = await dataAccess.GetRunningShiftAsync(employeeId);
+        if (shift == null)
+        {
+            AnsiConsole.MarkupLine("[red]You are not on a shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
 
+        string end = AnsiConsole.Ask<string>("End time (yyyy-mm-dd hh:mm)?");
+        DateTime endTime;
+        while (!DateTime.TryParse(end, out endTime))
+        {
+            AnsiConsole.MarkupLine("[red]Error parsing date, try again...[/]");
+            end = AnsiConsole.Ask<string>("End time (yyyy-mm-dd hh:mm)?");
+        }
+
+        EndShift endShift = new() { EndTime = endTime, Id = shift.Id };
+        shift = await dataAccess.EndShiftAsync(endShift);
+
+        if (shift == null)
+        {
+            AnsiConsole.MarkupLine("[red]Unable to end shift.[/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+        else
+        {
+            if (shift != null)
+            {
+                AnsiConsole.MarkupLine($"[green]Shift ended at {shift.EndTime}.[/] Press enter to return to menu...");
+                Console.ReadLine();
+            }
+        }
     }
 
     private static void UpdateShift()

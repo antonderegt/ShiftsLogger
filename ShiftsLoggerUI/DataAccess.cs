@@ -100,6 +100,29 @@ public class DataAccess
         return null;
     }
 
+    public async Task<Shift?> EndShiftAsync(EndShift endShift)
+    {
+        try
+        {
+            var jsonShift = JsonSerializer.Serialize(endShift);
+            HttpContent content = new StringContent(jsonShift, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{BasePath}/end", content);
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Shift>(json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"An error occurred while deserializing the JSON: {ex.Message}");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred while making the HTTP request: {ex.Message}");
+        }
+
+        return null;
+    }
+
     public async Task<bool> DeleteShiftAsync(int id)
     {
         try
