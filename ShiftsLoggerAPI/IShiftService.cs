@@ -7,6 +7,7 @@ public interface IShiftService
 {
     Task<List<Shift>> GetShiftsAsync();
     Task<List<Shift>> GetShiftsByEmployeeIdAsync(int id);
+    Task<Shift?> GetRunningShiftsByEmployeeIdAsync(int id);
     Task<Shift?> GetShiftByIdAsync(int id);
     Task<Shift?> StartShiftAsync(StartShift shift);
     Task<Shift?> EndShiftAsync(EndShift shift);

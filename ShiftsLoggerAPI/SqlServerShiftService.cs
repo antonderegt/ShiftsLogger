@@ -18,6 +18,14 @@ public class SqlServerShiftService(ShiftsContext context) : IShiftService
         return await _context.Shifts.Where(shift => shift.EmployeeId == id).ToListAsync();
     }
 
+    public async Task<Shift?> GetRunningShiftsByEmployeeIdAsync(int id)
+    {
+        return await _context.Shifts
+                        .Where(shift => shift.EmployeeId == id)
+                        .Where(shift => shift.EndTime == null)
+                        .FirstOrDefaultAsync();
+    }
+
     public async Task<Shift?> GetShiftByIdAsync(int id)
     {
         return await _context.Shifts.FirstOrDefaultAsync(shift => shift.Id == id);

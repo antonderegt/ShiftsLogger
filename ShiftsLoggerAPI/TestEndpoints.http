@@ -10,6 +10,10 @@ GET http://localhost:5168/shifts/3
 GET http://localhost:5168/shifts/employee/3
 ###
 
+# Get running shifts by employee id
+GET http://localhost:5168/shifts/employee/1/running
+###
+
 # Start shift
 POST http://localhost:5168/shifts/start
 content-type: application/json
@@ -25,8 +29,8 @@ POST http://localhost:5168/shifts/end
 content-type: application/json
 
 {
-    "endTime": "2022-03-16T13:45:30.1234567",
-    "id": 3
+    "endTime": "2022-03-17T13:45:30.1234567",
+    "id": 1
 }
 ###
 

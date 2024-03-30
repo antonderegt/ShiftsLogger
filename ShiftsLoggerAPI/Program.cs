@@ -21,6 +21,8 @@ app.MapGet("/shifts/{id}", ShiftController.GetShiftByIdAsync);
 
 app.MapGet("/shifts/employee/{id}", ShiftController.GetShiftsByEmployeeIdAsync);
 
+app.MapGet("/shifts/employee/{id}/running", ShiftController.GetRunningShiftsByEmployeeIdAsync);
+
 app.MapPost("/shifts/start", ShiftController.StartShiftAsync).AddEndpointFilter(Validate.StartShiftIsValid);
 
 app.MapPost("/shifts/end", ShiftController.EndShiftAsync).AddEndpointFilter(Validate.EndShiftIsValid);

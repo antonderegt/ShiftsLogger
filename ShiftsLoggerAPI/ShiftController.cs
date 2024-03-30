@@ -15,14 +15,40 @@ public class ShiftController
             : TypedResults.Ok(targetShift);
     }
 
-    public static async Task<List<Shift>> GetShiftsAsync(IShiftService service)
+    public static async Task<Results<Ok<List<Shift>>, NotFound>> GetShiftsAsync(IShiftService service)
     {
-        return await service.GetShiftsAsync();
+        List<Shift>? shfits = await service.GetShiftsAsync();
+
+        if (shfits == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(shfits);
     }
 
-    public static async Task<List<Shift>> GetShiftsByEmployeeIdAsync(int id, IShiftService service)
+    public static async Task<Results<Ok<List<Shift>>, NotFound>> GetShiftsByEmployeeIdAsync(int id, IShiftService service)
     {
-        return await service.GetShiftsByEmployeeIdAsync(id);
+        List<Shift>? shfits = await service.GetShiftsByEmployeeIdAsync(id);
+
+        if (shfits == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(shfits);
+    }
+
+    public static async Task<Results<Ok<Shift>, NotFound>> GetRunningShiftsByEmployeeIdAsync(int id, IShiftService service)
+    {
+        Shift? runningShift = await service.GetRunningShiftsByEmployeeIdAsync(id);
+
+        if (runningShift == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(runningShift);
     }
 
     public static async Task<Results<Created<Shift>, BadRequest<string>>> StartShiftAsync(StartShift startShift, IShiftService service)
