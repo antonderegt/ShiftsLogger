@@ -52,4 +52,20 @@ public class DataAccess
 
         return [];
     }
+
+    public async Task<bool> DeleteShiftAsync(int id)
+    {
+        try
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"{BasePath}/{id}");
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred while making the HTTP request: {ex.Message}");
+        }
+
+        return false;
+    }
 }

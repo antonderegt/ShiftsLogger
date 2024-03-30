@@ -38,7 +38,7 @@ public class UserInterface
                 UpdateShift();
                 break;
             case MainMenuOption.DeleteShift:
-                DeleteShift();
+                await DeleteShift();
                 break;
             case MainMenuOption.ShowShifts:
                 await ShowShifts();
@@ -66,16 +66,45 @@ public class UserInterface
 
     }
 
-    private static void DeleteShift()
-    {
-
-    }
-
-    private static async Task ShowShifts()
+    private static async Task DeleteShift()
     {
         DataAccess dataAccess = new();
-
         IEnumerable<Shift>? shifts = await dataAccess.GetShiftsAsync(employeeId);
+
+        if (shifts == null || !shifts.Any())
+        {
+            AnsiConsole.Markup("[red]No shifts yet![/] Press enter to return to menu...");
+            Console.ReadLine();
+            return;
+        }
+
+        await ShowShifts();
+
+        int shiftId = AnsiConsole.Ask<int>("Which shift do you want to [blue]delete[/]?");
+        if (!AnsiConsole.Confirm($"Are you sure you want to delete shift {shiftId}?"))
+        {
+            return;
+        }
+
+        bool result = await dataAccess.DeleteShiftAsync(shiftId);
+
+        if (result)
+        {
+            AnsiConsole.MarkupLine($"[green]Shift {shiftId} deleted.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine($"[red]Unable to delete shift {shiftId}.[/]");
+        }
+    }
+
+    private static async Task ShowShifts(IEnumerable<Shift>? shifts = null)
+    {
+        if (shifts == null)
+        {
+            DataAccess dataAccess = new();
+            shifts = await dataAccess.GetShiftsAsync(employeeId);
+        }
 
         if (shifts == null || !shifts.Any())
         {
