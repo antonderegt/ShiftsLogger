@@ -27,7 +27,7 @@ app.MapPost("/shifts/start", ShiftController.StartShiftAsync).AddEndpointFilter(
 
 app.MapPost("/shifts/end", ShiftController.EndShiftAsync).AddEndpointFilter(Validate.EndShiftIsValid);
 
-app.MapPost("/shifts/update", ShiftController.UpdateShiftAsync).AddEndpointFilter(Validate.UpdatedShiftIsValid);
+app.MapPut("/shifts/update", ShiftController.UpdateShiftAsync).AddEndpointFilter(Validate.UpdatedShiftIsValid);
 
 app.MapDelete("/shifts/{id}", ShiftController.DeleteShiftAsync);
 
