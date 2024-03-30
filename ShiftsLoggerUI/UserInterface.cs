@@ -42,6 +42,8 @@ public class UserInterface
                 break;
             case MainMenuOption.ShowShifts:
                 await ShowShifts();
+                AnsiConsole.MarkupLine("Press enter to return to menu...");
+                Console.ReadLine();
                 break;
             case MainMenuOption.Quit:
                 QuitApplication();
@@ -73,7 +75,7 @@ public class UserInterface
     {
         DataAccess dataAccess = new();
 
-        IEnumerable<Shift>? shifts = await dataAccess.GetShiftsAsync();
+        IEnumerable<Shift>? shifts = await dataAccess.GetShiftsAsync(employeeId);
 
         if (shifts == null || !shifts.Any())
         {
@@ -84,7 +86,7 @@ public class UserInterface
 
         Table table = new()
         {
-            Title = new TableTitle("All shifts")
+            Title = new TableTitle("My shifts")
         };
 
         table.AddColumn("Id");
@@ -98,9 +100,6 @@ public class UserInterface
         }
 
         AnsiConsole.Write(table);
-
-        AnsiConsole.MarkupLine("Press enter to return to menu...");
-        Console.ReadLine();
     }
 
     private static void QuitApplication()

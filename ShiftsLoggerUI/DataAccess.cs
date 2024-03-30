@@ -34,11 +34,11 @@ public class DataAccess
         return value;
     }
 
-    public async Task<IEnumerable<Shift>?> GetShiftsAsync()
+    public async Task<IEnumerable<Shift>?> GetShiftsAsync(int id)
     {
         try
         {
-            var json = await _client.GetStringAsync(BasePath);
+            var json = await _client.GetStringAsync($"{BasePath}/employee/{id}");
             return JsonSerializer.Deserialize<IEnumerable<Shift>>(json);
         }
         catch (JsonException ex)
