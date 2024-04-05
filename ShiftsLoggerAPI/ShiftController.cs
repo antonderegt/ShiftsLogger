@@ -60,7 +60,7 @@ public class ShiftController
             return TypedResults.BadRequest("Employee already has a shift running.");
         }
 
-        return TypedResults.Created("/shifts/{id}", shift);
+        return TypedResults.Created($"/shifts/{shift.Id}", shift);
     }
 
     public static async Task<Results<Created<Shift>, NotFound>> EndShiftAsync(EndShift endShift, IShiftService service)
@@ -72,7 +72,7 @@ public class ShiftController
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Created("/shifts/{id}", shift);
+        return TypedResults.Created($"/shifts/{shift.Id}", shift);
     }
 
     public static async Task<Results<Created<Shift>, NotFound>> UpdateShiftAsync(Shift updatedShift, IShiftService service)
@@ -84,7 +84,7 @@ public class ShiftController
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Created("/shifts/{id}", shift);
+        return TypedResults.Created($"/shifts/{shift.Id}", shift);
     }
 
     public static async Task<Results<NoContent, NotFound>> DeleteShiftAsync(int id, IShiftService service)
